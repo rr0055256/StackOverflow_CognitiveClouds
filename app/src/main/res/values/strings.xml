@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Stackoverflow</string>
     <string name="action_settings">Settings</string>
+
+    <!--card view text-->
+    <string name="share">Share</string>
+    <string name="like">Like</string>
 </resources>

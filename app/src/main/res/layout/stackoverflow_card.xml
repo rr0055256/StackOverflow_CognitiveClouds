@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:layout_margin="5dp"
+    card_view:cardElevation="10dp"
+    card_view:cardBackgroundColor="@color/cardview_light_background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView" />
+
+        <TextView
+            android:id="@+id/question"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="16dp"
+            android:layout_height="wrap_content"
+            android:textSize="26sp"
+            android:textStyle="italic"
+            android:layout_width="wrap_content"
+            android:layout_toRightOf="@+id/imageView"
+            android:layout_toEndOf="@+id/imageView" />
+
+        <TextView
+            android:id="@+id/tags"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/question"
+            android:layout_alignLeft="@+id/imageView"
+            android:paddingTop="5dp"
+            android:textStyle="italic"
+            android:textSize="17sp"/>
+
+        <TextView
+            android:id="@+id/rating"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/tags"
+            android:textSize="15sp"
+            android:layout_alignLeft="@+id/imageView"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/like"
+            android:text="@string/like"
+            android:layout_alignBottom="@+id/imageView"/>
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/share"
+        android:text="@string/share"
+        android:layout_alignBottom="@+id/rating"/>
+</android.support.v7.widget.CardView>
