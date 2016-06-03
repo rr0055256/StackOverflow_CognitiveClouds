@@ -58,7 +58,8 @@ public class Item implements Serializable {
         return score;
     }
 
-    public long getLast_activity_date() {
+    public long getActivityLastDate() {
+
         return last_activity_date;
     }
 
@@ -66,7 +67,7 @@ public class Item implements Serializable {
         String s = " ";
         for (int i = 0; i < tags.length(); i++) {
             try {
-                s = s + tags.getString(i);
+                s = s +" #"+tags.getString(i);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

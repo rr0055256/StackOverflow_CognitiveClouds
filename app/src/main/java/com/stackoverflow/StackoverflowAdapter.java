@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 /**
@@ -49,7 +51,7 @@ public class StackoverflowAdapter extends RecyclerView.Adapter<StackoverflowAdap
         TextView tagName;
 
 //        @BindView(R.id.rating)
-        TextView rating;
+        Button rating;
 
 //        @BindView(R.id.like)
         Button  like;
@@ -57,15 +59,21 @@ public class StackoverflowAdapter extends RecyclerView.Adapter<StackoverflowAdap
 //        @BindView(R.id.share)
         Button share;
 
+        TextView timeStamp;
+
+        TextView userName;
+
         StackOverflowViewHolder(View itemView){
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.card_view);
             profileImage = (ImageView) itemView.findViewById(R.id.imageView);
             question = (TextView) itemView.findViewById(R.id.question);
             tagName = (TextView) itemView.findViewById(R.id.tags);
-            rating = (TextView) itemView.findViewById(R.id.rating);
+            rating = (Button) itemView.findViewById(R.id.rating);
             like = (Button) itemView.findViewById(R.id.like);
             share = (Button) itemView.findViewById(R.id.share);
+            timeStamp = (TextView) itemView.findViewById(R.id.timestamp);
+            userName = (TextView) itemView.findViewById(R.id.user);
 
         }
 
@@ -78,11 +86,28 @@ public class StackoverflowAdapter extends RecyclerView.Adapter<StackoverflowAdap
 
         holder.question.setText(item.getTitle());
         holder.tagName.setText(item.getTags());
-//        holder.rating.setText(Item.getScore());
-        Picasso.with(context).load(item.getProfile_image()).into(holder.profileImage);
-//        holder.rating.setText(item.get);
-        //time is missing
 
+        holder.rating.setText(String.valueOf(item.getScore()));
+        Picasso.with(context).load(item.getProfile_image()).into(holder.profileImage);
+        holder.tagName.setText(item.getTags());
+
+        //set time stamp
+        //get activity last date
+        long activityLastDate = item.getActivityLastDate();
+        //current time
+        long time1 = System.currentTimeMillis()/1000;
+        long uptime=time1+activityLastDate;
+        int minutes = (int) ((uptime % 3600) / 60);
+        holder.timeStamp.setText("Last Updated :"+String.valueOf(minutes)+" minutes ago");
+
+        holder.userName.setText(item.getDisplay_name());
+
+        /*int titleLength = item.getTitle().length();
+        if(titleLength>65){
+            String s = item.getTitle().substring(0,65)+"...";
+            holder.question.setText(s);
+        }*/
+        //set user name
     }
 
     @Override

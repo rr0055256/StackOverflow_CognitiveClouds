@@ -1,6 +1,7 @@
 package com.stackoverflow;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -34,10 +36,13 @@ public class MainActivity extends AppCompatActivity {
 
     JsonManipulationTask jsonManipulationTask;
 //    Item[] items;
-    ArrayList<Item> items=new ArrayList<>();
+    private ArrayList<Item> listOfitems;
 
+    private Item[] items;
 
+    private LinearLayoutManager linearLayoutManager;
 
+    private Parcelable parcelable;
 
 
     @Override
@@ -48,50 +53,12 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         recyclerView  = (RecyclerView) findViewById(R.id.recycler_view);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
 
-        /*jsonManipulationTask = new JsonManipulationTask(getApplicationContext());
-        jsonManipulationTask.execute(androidUrl);
-*/
-//        output = jsonManipulationTask.getOutput();
-//        Log.d("Output",output.toString());
+        initiateVolley(androidUrl);
 
-//        convertToList();
-
-
-        MySingleton mySingleton = MySingleton.getInstance(getApplicationContext());
-
-
-//        Image,Question,time stamp,User name,tags,votes
-        //JSON activity
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, androidUrl, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d("Inner Response", response.toString());
-                Item[] items2 = parseJson(response.toString());
-
-                items.clear();
-                for(Item object : items2){
-                    items.add(object);
-                }
-
-                recyclerView.setAdapter(new StackoverflowAdapter(items,getApplicationContext()));
-//                JsonManipulationTask.this.response = response;
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Error Response",error.toString());
-            }
-        });
-
-        mySingleton.addToRequestQueue(jsonObjectRequest);
-
-//        recyclerView.setAdapter(new StackoverflowAdapter(items));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -105,11 +72,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // restore RecyclerView state
+        if (parcelable != null) {
+            linearLayoutManager.onRestoreInstanceState(parcelable);
+        }
     }
 
     @Override
@@ -133,39 +111,63 @@ public class MainActivity extends AppCompatActivity {
         }
     }*/
 
-    private Item[] parseJson(String jsonString) {
-        try {
-            JSONObject object=new JSONObject(jsonString);
-            JSONArray itemArray=object.getJSONArray("items");
-            Item[] output=new Item[itemArray.length()];
-            String image;
-            String name;
-            int score;
-            String link;
-            String title;
-            long last_date;
+    private void initiateVolley(String urlString){
 
-            //for loop to get all the necessary details
-            for(int i=0;i<itemArray.length();i++) {
-                JSONObject root = itemArray.getJSONObject(i);
-                score=root.getInt("score");
-                link=root.getString("link");
-                title=root.getString("title");
-                last_date=root.getLong("last_activity_date");
-                JSONObject owner=root.getJSONObject("owner");
-                image=owner.getString("profile_image");
-                name=owner.getString("display_name");
-                JSONArray tag=root.getJSONArray("tags");
+        Log.d("URL",urlString);
 
-                //String image, String name, int score, String link, String title, long time, String[] tags)
-                Item f = new Item(image,name,score,link,title,last_date,tag);
-                Log.d("f",String.valueOf(f.getDisplay_name()));
-                output[i]=f;
+        //object of the singleton class for volley
+        MySingleton mySingleton = MySingleton.getInstance(this);
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlString, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("Response", response.toString());
+                JsonManipulationTask jsonManipulationTask = new JsonManipulationTask(MainActivity.this);
+
+                jsonManipulationTask.setJsonManipulationInterfaceVariable(new JsonManipulationTaskInterface() {
+                    @Override
+                    public void fetchResult(Item[] items) {
+                        listOfitems=new ArrayList<>();
+                        for(Item object : items){
+                            listOfitems.add(object);
+                        }
+//                        return  listOfitems;
+                        recyclerView.setAdapter(new StackoverflowAdapter(listOfitems,MainActivity.this));
+                    }
+
+                });
+                jsonManipulationTask.execute(response.toString());
+
+//                ArrayList arrayList = fetchResult(items);
+
+
+
             }
-            return output;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Error Response",error.toString());
+            }
+        });
+
+        mySingleton.addToRequestQueue(jsonObjectRequest);
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        parcelable = linearLayoutManager.onSaveInstanceState();
+        outState.putParcelable("myState", parcelable);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState!=null)
+        parcelable = savedInstanceState.getParcelable("myState");
     }
 }

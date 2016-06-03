@@ -4,25 +4,32 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 /**
  * Created by raman on 1/6/16.
  */
 
-public class JsonManipulationTask extends AsyncTask<String,Void,Item[]>{
+public class JsonManipulationTask extends AsyncTask<String,String,Item[]>{
 
     private Context context;
-    JSONObject response;
-    Item[] output;
+    private JsonManipulationTaskInterface jsonManipulationTaskInterface;
+    private JSONObject response;
+    private Item[] items,output;
+    private RequestQueue requestQueue;
 
     public JsonManipulationTask(Context context) {
         this.context = context;
@@ -30,34 +37,25 @@ public class JsonManipulationTask extends AsyncTask<String,Void,Item[]>{
 
     @Override
     protected Item[] doInBackground(String... params) {
-        String urlString = params[0];
 
-        Log.d("URL",urlString);
-        //object of the singleton class for volley
-        MySingleton mySingleton = MySingleton.getInstance(context);
-
-
-//        Image,Question,time stamp,User name,tags,votes
-        //JSON activity
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlString, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d("Response", response.toString());
-                parseJson(response.toString());
-//                JsonManipulationTask.this.response = response;
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Error Response",error.toString());
-            }
-        });
-
-        mySingleton.addToRequestQueue(jsonObjectRequest);
-        return parseJson(response.toString());
+        parseJson(params[0]);
+        return output;
     }
+
+
+    @Override
+    protected void onPostExecute(Item[] items) {
+        super.onPostExecute(items);
+        if(jsonManipulationTaskInterface!=null) {
+            jsonManipulationTaskInterface.fetchResult(items);
+        }
+    }
+
+    //to set the interface variable
+    public void setJsonManipulationInterfaceVariable(JsonManipulationTaskInterface jsonManipulationInterfaceVariable){
+        this.jsonManipulationTaskInterface = jsonManipulationInterfaceVariable;
+    }
+
 
     private Item[] parseJson(String jsonString) {
         try {
@@ -77,6 +75,7 @@ public class JsonManipulationTask extends AsyncTask<String,Void,Item[]>{
                 title=root.getString("title");
                 last_date=root.getLong("last_activity_date");
                 JSONObject owner=root.getJSONObject("owner");
+
                 image=owner.getString("profile_image");
                 name=owner.getString("display_name");
                 JSONArray tag=root.getJSONArray("tags");
@@ -92,9 +91,4 @@ public class JsonManipulationTask extends AsyncTask<String,Void,Item[]>{
         }
     }
 
-    @Nullable
-    public Item[] getOutput(){
-        Log.d("JsonManiOutput",(String.valueOf(output.length)));
-        return output;
-    }
 }

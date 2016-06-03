@@ -17,7 +17,7 @@
         android:padding="3dp">
 
         <Button
-            android:layout_width="110dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/like"
             android:text="@string/like"
@@ -36,27 +36,15 @@
             android:layout_marginLeft="13dp"
             android:layout_marginStart="13dp" />
 
-        <TextView
-            android:layout_height="85dp"
-            android:layout_alignTop="@+id/imageView"
-            android:paddingLeft="4dp"
-            android:paddingTop="4dp"
-            android:id="@+id/question"
-            tools:text="50sp"
-            android:layout_width="250dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:textColor="#000000"/>
-
         <Button
-            android:layout_width="110dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/rating"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true" />
 
         <Button
-            android:layout_width="110dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/share"
             android:text="@string/share"
@@ -74,7 +62,7 @@
 
         <TextView
             android:text="10sp"
-            android:layout_width="200dp"
+            android:layout_width="450dp"
             android:layout_height="35dp"
             android:layout_marginTop="12dp"
             android:id="@+id/tags"
@@ -104,6 +92,18 @@
             android:layout_alignStart="@+id/question"
             android:layout_toLeftOf="@+id/tags"
             android:layout_toStartOf="@+id/tags" />
+
+        <TextView
+            android:layout_height="85dp"
+            android:paddingLeft="4dp"
+            android:paddingTop="4dp"
+            android:id="@+id/question"
+            tools:text="50sp"
+            android:layout_width="480dp"
+            android:textColor="#000000"
+            android:layout_below="@+id/timestamp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
 
     </RelativeLayout>
