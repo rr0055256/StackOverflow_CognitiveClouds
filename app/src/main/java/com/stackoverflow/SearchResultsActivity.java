@@ -1,19 +1,21 @@
-package com.stackoverflow.fragments;
+package com.stackoverflow;
 
-
+import android.app.SearchManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -21,79 +23,61 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.stackoverflow.Item;
-import com.stackoverflow.JsonManipulationTask;
-import com.stackoverflow.JsonManipulationTaskInterface;
-import com.stackoverflow.MySingleton;
-import com.stackoverflow.R;
 import com.stackoverflow.adapter.StackoverflowAdapter;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+public class SearchResultsActivity extends AppCompatActivity {
 
-/**
- * A simple {@link Fragment} subclass.
- * create an instance of this fragment.
- */
-public class HomeFragment extends Fragment {
+    String url = "https://api.stackexchange.com/2.2/questions/unanswered?order=desc&sort=activity&tagged=android&site=stackoverflow";
 
-    private Parcelable parcelable;
-
-    private  String androidUrl;
-
-    private static String androidUrlFirstPart = "https://api.stackexchange.com";
+    private ArrayList<Item> listOfitems;
 
     private RecyclerView recyclerView;
 
-    private int lastFirstVisiblePosition;
-
-    JsonManipulationTask jsonManipulationTask;
-    //    Item[] items;
-    private ArrayList<Item> listOfitems;
-
-
     private LinearLayoutManager linearLayoutManager;
 
-    private View view,sortView;
-
-    private FloatingActionButton fabSort;
+    private RadioButton activity,creation, votes, relevance, asc, dsc;
 
     private RadioGroup firstGroup, secondGroup;
 
-    private RadioButton activity,creation,relevance,votes,asc,dsc;
+    private Parcelable parcelable;
 
-    int radioGroupId1,radioGroupId2;
+    private int radioGroupId1,radioGroupId2;
+
+    private String query,replacedUrl;
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_blank, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_search_results);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        recyclerView  = (RecyclerView) view.findViewById(R.id.recycler_view);
-        fabSort = (FloatingActionButton) view.findViewById(R.id.fab);
-        linearLayoutManager = new LinearLayoutManager(view.getContext());
+
+
+        recyclerView  = (RecyclerView) findViewById(R.id.recycler_view_search);
+
+        linearLayoutManager = new LinearLayoutManager(SearchResultsActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
 
-        androidUrl = androidUrlFirstPart+"/2.2/questions/unanswered?order=desc&sort=activity&tagged=android&site=stackoverflow";
+        //search
+        handleIntent(getIntent());
 
-        initiateVolley(androidUrl);
-
-        ///2.2/questions/unanswered?order=desc&sort=activity&site=stackoverflow
-
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
 
-        fabSort.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(SearchResultsActivity.this);
 
-                LayoutInflater alertInflater = LayoutInflater.from(view.getContext());
+                LayoutInflater alertInflater = LayoutInflater.from(SearchResultsActivity.this);
 
-                sortView = alertInflater.inflate(R.layout.sort_selection,null);
+                 View sortView = alertInflater.inflate(R.layout.sort_selection,null);
 
                 activity = (RadioButton) sortView.findViewById(R.id.activity);
                 creation = (RadioButton) sortView.findViewById(R.id.creation);
@@ -103,15 +87,15 @@ public class HomeFragment extends Fragment {
                 asc = (RadioButton) sortView.findViewById(R.id.asc);
                 radioGroupId1 = R.id.activity;
                 radioGroupId2 = R.id.dsc;
-                firstGroup = (RadioGroup) sortView.findViewById(R.id.firstRadioGroup);
-                secondGroup = (RadioGroup) sortView.findViewById(R.id.secondRadioGroup);
+                RadioGroup firstGroup = (RadioGroup) sortView.findViewById(R.id.firstRadioGroup);
+                RadioGroup secondGroup = (RadioGroup) sortView.findViewById(R.id.secondRadioGroup);
 
                 builder.setView(sortView);
 
                 firstGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(RadioGroup group, int checkedId) {
-                            radioGroupId1 = checkedId;
+                        radioGroupId1 = checkedId;
                     }
                 });
 
@@ -135,44 +119,44 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(radioGroupId1==R.id.activity && radioGroupId2==R.id.dsc){
-                            String url = androidUrl.replace("activity","activity");
-                            Log.d("URLChanged",url);
-                            initiateVolley(url);
+                            String urlSort = replacedUrl.replace("activity","activity");
+                            Log.d("URLChanged",urlSort);
+                            initiateVolley(urlSort);
                         }
                         else if(radioGroupId1==R.id.creation && radioGroupId2==R.id.dsc){
-                            String url = androidUrl.replace("activity","creation");
-                            Log.d("URLChanged",url);
-                            initiateVolley(url);
+                            String urlSort = replacedUrl.replace("activity","creation");
+                            Log.d("URLChanged",urlSort);
+                            initiateVolley(urlSort);
                         }
                         else if(radioGroupId1==votes.getId() && radioGroupId2==R.id.dsc){
-                            String url = androidUrl.replace("activity","votes");
-                            Log.d("URLChanged",url);
-                            initiateVolley(url);
+                            String urlSort = replacedUrl.replace("activity","votes");
+                            Log.d("URLChanged",urlSort);
+                            initiateVolley(urlSort);
                         }
                         else if (radioGroupId1==relevance.getId() && radioGroupId2==R.id.dsc){
-                            String url = androidUrl.replace("activity","activity");
-                            Log.d("URLChanged",url);
-                            initiateVolley(url);
+                            String urlSort = replacedUrl.replace("activity","activity");
+                            Log.d("URLChanged",urlSort);
+                            initiateVolley(urlSort);
                         }
                         else if(radioGroupId1==activity.getId() && radioGroupId2==R.id.asc){
-                            String url = androidUrl.replace("activity","activity");
+                            String urlSort = replacedUrl.replace("activity","activity");
 //                            Log.d("URLChanged",url.replace("desc","asc"));
-                            initiateVolley(url.replace("desc","asc"));
+                            initiateVolley(urlSort.replace("desc","asc"));
                         }
                         else if(radioGroupId1==creation.getId() && radioGroupId2==R.id.asc){
-                            String url = androidUrl.replace("activity","creation");
-                            Log.d("URLChanged",url.replace("desc","asc"));
-                            initiateVolley(url.replace("desc","asc"));
+                            String urlSort = replacedUrl.replace("activity","creation");
+                            Log.d("URLChanged",urlSort.replace("desc","asc"));
+                            initiateVolley(urlSort.replace("desc","asc"));
                         }
                         else if(radioGroupId1==votes.getId() && radioGroupId2==R.id.asc){
-                            String url = androidUrl.replace("activity","votes");
-                            Log.d("URLChanged",url.replace("desc","asc"));
-                            initiateVolley(url.replace("desc","asc"));
+                            String urlSort = replacedUrl.replace("activity","votes");
+                            Log.d("URLChanged",urlSort.replace("desc","asc"));
+                            initiateVolley(urlSort.replace("desc","asc"));
                         }
                         else if (radioGroupId1==relevance.getId() && radioGroupId2==R.id.asc){
-                            String url = androidUrl.replace("activity","activity");
-                            Log.d("URLChanged",url.replace("desc","asc"));
-                            initiateVolley(url.replace("desc","asc"));
+                            String urlSort = replacedUrl.replace("activity","activity");
+                            Log.d("URLChanged",urlSort.replace("desc","asc"));
+                            initiateVolley(urlSort.replace("desc","asc"));
                         }
                         //dismiss the window
                         dialog.dismiss();
@@ -182,9 +166,28 @@ public class HomeFragment extends Fragment {
                 alertDialog.show();
             }
         });
+    }
 
-        return view;
+    @Override
+    protected void onNewIntent(Intent intent) {
 
+        handleIntent(intent);
+    }
+
+
+    private void handleIntent(Intent intent) {
+
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            query = intent.getStringExtra(SearchManager.QUERY);
+            //use the query to search your data somehow
+
+            Log.d("Query",query);
+            replacedUrl = url.replace("android",query);
+
+            initiateVolley(replacedUrl);
+
+
+        }
     }
 
     private void initiateVolley(String urlString){
@@ -192,14 +195,14 @@ public class HomeFragment extends Fragment {
         Log.d("URLReceived",urlString);
 
         //object of the singleton class for volley
-        MySingleton mySingleton = MySingleton.getInstance(view.getContext());
+        MySingleton mySingleton = MySingleton.getInstance(SearchResultsActivity.this);
 
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlString, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("Response", response.toString());
-                jsonManipulationTask = new JsonManipulationTask(view.getContext());
+                JsonManipulationTask jsonManipulationTask = new JsonManipulationTask(SearchResultsActivity.this);
 
                 jsonManipulationTask.setJsonManipulationInterfaceVariable(new JsonManipulationTaskInterface() {
                     @Override
@@ -209,7 +212,7 @@ public class HomeFragment extends Fragment {
                             listOfitems.add(object);
                         }
 //                        return  listOfitems;
-                        recyclerView.setAdapter(new StackoverflowAdapter(listOfitems,view.getContext()));
+                        recyclerView.setAdapter(new StackoverflowAdapter(listOfitems,SearchResultsActivity.this));
                     }
 
                 });
@@ -229,17 +232,8 @@ public class HomeFragment extends Fragment {
 
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        lastFirstVisiblePosition = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
-    }
+    //restoring the state position
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        linearLayoutManager.scrollToPosition(lastFirstVisiblePosition);
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -251,13 +245,20 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
 
         if(savedInstanceState!=null){
             parcelable = savedInstanceState.getParcelable("state");
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        if(parcelable != null){
+            linearLayoutManager.onRestoreInstanceState(parcelable);
+        }
+    }
 }

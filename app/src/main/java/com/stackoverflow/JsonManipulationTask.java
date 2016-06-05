@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -61,57 +62,65 @@ public class JsonManipulationTask extends AsyncTask<String,String,Item[]>{
         try {
             JSONObject object=new JSONObject(jsonString);
             JSONArray itemArray=object.getJSONArray("items");
-            output=new Item[itemArray.length()];
-            String image;
-            String name;
-            int score;
-            String link;
-            String title;
-            long last_date;
-            for(int i=0;i<itemArray.length();i++) {
-                JSONObject root = itemArray.getJSONObject(i);
+            if(itemArray.length() == 0){
+                output = new Item[1];
+                String[] data = {"not", "found"};
+                JSONArray json = new JSONArray(Arrays.asList(data));
+                Item f = new Item("https://www.google.co.in/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwjl98HEqpDNAhXBLo8KHWePDOMQjRwIBw&url=http%3A%2F%2Fstackoverflow.com%2F&psig=AFQjCNE4aC3EdbfduLRz_-jjiT8naJh-yQ&ust=1465197059251326",null,0,null,"Sorry,no results found",0,json,null);
+                output[0] = f;
+            }else {
+                output = new Item[itemArray.length()];
+                String image;
+                String name;
+                int score;
+                String link;
+                String title;
+                long last_date;
+                for (int i = 0; i < itemArray.length(); i++) {
+                    JSONObject root = itemArray.getJSONObject(i);
 
-                if(root.isNull("score")){
-                    score = 0;
-                }else{
-                    score=root.getInt("score");
-                }
+                    if (root.isNull("score")) {
+                        score = 0;
+                    } else {
+                        score = root.getInt("score");
+                    }
 
-                if(root.isNull("link")){
-                    link = "http://stackoverflow.com/questions";
-                }else{
-                    link=root.getString("link");
-                }
+                    if (root.isNull("link")) {
+                        link = "http://stackoverflow.com/questions";
+                    } else {
+                        link = root.getString("link");
+                    }
 
-                if(root.isNull("title")){
-                    title = "Stackoverflow Question";
-                }else{
-                    title=root.getString("title");
-                }
+                    if (root.isNull("title")) {
+                        title = "Stackoverflow Question";
+                    } else {
+                        title = root.getString("title");
+                    }
 
-                if(root.isNull("last_activity_date")){
-                    last_date = 0;
-                }else{
-                    last_date=root.getLong("last_activity_date");
-                }
+                    if (root.isNull("last_activity_date")) {
+                        last_date = 0;
+                    } else {
+                        last_date = root.getLong("last_activity_date");
+                    }
 
-                JSONObject owner=root.getJSONObject("owner");
+                    JSONObject owner = root.getJSONObject("owner");
 
-                if(owner.isNull("profile_image")){
-                    image = "https://cnet4.cbsistatic.com/hub/i/2011/10/27/a66dfbb7-fdc7-11e2-8c7c-d4ae52e62bcc/android-wallpaper5_2560x1600_1.jpg";
-                }else {
-                    image = owner.getString("profile_image");
+                    if (owner.isNull("profile_image")) {
+                        image = "https://cnet4.cbsistatic.com/hub/i/2011/10/27/a66dfbb7-fdc7-11e2-8c7c-d4ae52e62bcc/android-wallpaper5_2560x1600_1.jpg";
+                    } else {
+                        image = owner.getString("profile_image");
+                    }
+                    if (owner.isNull("display_name")) {
+                        name = "User";
+                    } else {
+                        name = owner.getString("display_name");
+                    }
+                    JSONArray tag = root.getJSONArray("tags");
+                    //String image, String name, int score, String link, String title, long time, String[] tags)
+                    Item f = new Item(image, name, score, link, title, last_date, tag, null);
+                    Log.d("f", String.valueOf(f.getDisplay_name()));
+                    output[i] = f;
                 }
-                if(owner.isNull("display_name")){
-                    name = "User";
-                }else {
-                    name = owner.getString("display_name");
-                }
-                JSONArray tag=root.getJSONArray("tags");
-                //String image, String name, int score, String link, String title, long time, String[] tags)
-                Item f = new Item(image,name,score,link,title,last_date,tag,null);
-                Log.d("f",String.valueOf(f.getDisplay_name()));
-                output[i]=f;
             }
             return output;
         } catch (JSONException e) {

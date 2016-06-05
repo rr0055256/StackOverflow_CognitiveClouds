@@ -4,6 +4,8 @@ package com.stackoverflow.fragments;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +24,8 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class FavoriteFragment extends Fragment {
+
+    private Parcelable parcelable;
 
     private RecyclerView recyclerView;
 
@@ -101,5 +105,23 @@ public class FavoriteFragment extends Fragment {
         }
         db.close();
         return output;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //save list state
+        parcelable = linearLayoutManager.onSaveInstanceState();
+        outState.putParcelable("state",parcelable);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if(savedInstanceState!=null){
+            parcelable = savedInstanceState.getParcelable("state");
+        }
     }
 }

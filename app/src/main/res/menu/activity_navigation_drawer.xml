@@ -10,9 +10,9 @@
             android:id="@+id/nav_favorite"
             android:icon="@drawable/ic_favorite_black_24dp"
             android:title="Favourites" />
-        <item
+        <!--<item
             android:id="@+id/nav_search"
             android:icon="@drawable/ic_search_black_24dp"
-            android:title="Search Results" />
+            android:title="Search Results" -->/>
     </group>
 </menu>

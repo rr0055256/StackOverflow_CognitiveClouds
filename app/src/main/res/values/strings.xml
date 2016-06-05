@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Stackoverflow</string>
+    <string name="app_name">StackOverflow Results</string>
     <string name="action_settings">Settings</string>
 
     <!--card view text-->
@@ -22,5 +22,10 @@
     <string name="votes">Votes</string>
     <string name="creation">Creation</string>
     <string name="sort_based_on">Sort based on -</string>
+
+    <!--Search preferncces-->
+    <string name="search_title">Search for hash tags</string>
+    <string name="search_hint">Search for hash tags</string>
+    <string name="title_activity_search_results">Search Results</string>
 
 </resources>

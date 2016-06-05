@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.stackoverflow.CircleTransform;
 import com.stackoverflow.Item;
 import com.stackoverflow.R;
 import com.stackoverflow.db.FavoriteDbHelper;
@@ -93,7 +94,16 @@ public class StackoverflowAdapter extends RecyclerView.Adapter<StackoverflowAdap
         holder.tagName.setText(item.getTags());
 
         holder.rating.setText(String.valueOf(item.getScore()));
-        Picasso.with(context).load(item.getProfile_image()).into(holder.profileImage);
+
+
+        try {
+            //Load rounded images
+//            Picasso.with(context).load(item.getProfile_image()).transform(new CircleTransform()).into(holder.profileImage);
+            Picasso.with(context).load(item.getProfile_image()).into(holder.profileImage);
+
+        }catch(Exception e){
+
+        }
         holder.tagName.setText(item.getTags());
 
         //set time stamp

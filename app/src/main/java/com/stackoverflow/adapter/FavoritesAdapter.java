@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.stackoverflow.CircleTransform;
 import com.stackoverflow.Item;
 import com.stackoverflow.R;
 import com.stackoverflow.db.FavoriteDbHelper;
@@ -52,8 +53,13 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         holder.tagName.setText(item.getFavoriteTags());
 
         holder.rating.setText(String.valueOf(item.getScore()));
-        Picasso.with(context).load(item.getProfile_image()).into(holder.profileImage);
-        holder.tagName.setText(item.getFavoriteTags());
+        try {
+            //Loaded rounded images
+//            Picasso.with(context).load(item.getProfile_image()).transform(new CircleTransform()).into(holder.profileImage);
+            Picasso.with(context).load(item.getProfile_image()).into(holder.profileImage);
+        }catch(Exception e) {
+            holder.tagName.setText(item.getFavoriteTags());
+        }
 
 
         holder.userName.setText(item.getDisplay_name());
