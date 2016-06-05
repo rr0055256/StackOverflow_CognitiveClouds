@@ -1,2 +1,3 @@
 # StackOverflow_CognitiveClouds
-App to test my capability
+
+Search results of Questions with #android
