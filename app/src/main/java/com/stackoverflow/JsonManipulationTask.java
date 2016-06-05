@@ -70,17 +70,46 @@ public class JsonManipulationTask extends AsyncTask<String,String,Item[]>{
             long last_date;
             for(int i=0;i<itemArray.length();i++) {
                 JSONObject root = itemArray.getJSONObject(i);
-                score=root.getInt("score");
-                link=root.getString("link");
-                title=root.getString("title");
-                last_date=root.getLong("last_activity_date");
+
+                if(root.isNull("score")){
+                    score = 0;
+                }else{
+                    score=root.getInt("score");
+                }
+
+                if(root.isNull("link")){
+                    link = "http://stackoverflow.com/questions";
+                }else{
+                    link=root.getString("link");
+                }
+
+                if(root.isNull("title")){
+                    title = "Stackoverflow Question";
+                }else{
+                    title=root.getString("title");
+                }
+
+                if(root.isNull("last_activity_date")){
+                    last_date = 0;
+                }else{
+                    last_date=root.getLong("last_activity_date");
+                }
+
                 JSONObject owner=root.getJSONObject("owner");
 
-                image=owner.getString("profile_image");
-                name=owner.getString("display_name");
+                if(owner.isNull("profile_image")){
+                    image = "https://cnet4.cbsistatic.com/hub/i/2011/10/27/a66dfbb7-fdc7-11e2-8c7c-d4ae52e62bcc/android-wallpaper5_2560x1600_1.jpg";
+                }else {
+                    image = owner.getString("profile_image");
+                }
+                if(owner.isNull("display_name")){
+                    name = "User";
+                }else {
+                    name = owner.getString("display_name");
+                }
                 JSONArray tag=root.getJSONArray("tags");
                 //String image, String name, int score, String link, String title, long time, String[] tags)
-                Item f = new Item(image,name,score,link,title,last_date,tag);
+                Item f = new Item(image,name,score,link,title,last_date,tag,null);
                 Log.d("f",String.valueOf(f.getDisplay_name()));
                 output[i]=f;
             }

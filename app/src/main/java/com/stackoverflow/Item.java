@@ -17,9 +17,9 @@ public class Item implements Serializable {
     String title;
     long last_activity_date;
     JSONArray tags=null;
-    String tagies=null;
+    String favoriteTags=null;
 
-    public Item(String image, String name, int score, String link, String title, long time, JSONArray tags) {
+    public Item(String image, String name, int score, String link, String title, long time, JSONArray tags,String favoriteTags) {
         this.profile_image = image;
         this.display_name = name;
         this.score = score;
@@ -27,6 +27,7 @@ public class Item implements Serializable {
         this.title = title;
         this.last_activity_date = time;
         this.tags = tags;
+        this.favoriteTags=favoriteTags;
     }
 
     public Item(String pic, String name, int score, long time, String link, String title) {
@@ -73,6 +74,10 @@ public class Item implements Serializable {
             }
         }
         return s;
+    }
+
+    public String getFavoriteTags(){
+        return favoriteTags;
     }
 }
 

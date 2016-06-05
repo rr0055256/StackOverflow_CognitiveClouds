@@ -9,4 +9,18 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--Sort pop up-->
+    <string name="asc_dsc_order">Ascending/Descending Order</string>
+    <string name="asc">Ascending</string>
+    <string name="dsc">Descending</string>
+    <string name="activity">Activity</string>
+    <string name="relevance">Relevance</string>
+    <string name="votes">Votes</string>
+    <string name="creation">Creation</string>
+    <string name="sort_based_on">Sort based on -</string>
+
 </resources>
