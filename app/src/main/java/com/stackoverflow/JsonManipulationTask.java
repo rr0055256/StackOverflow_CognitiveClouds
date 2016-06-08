@@ -28,9 +28,10 @@ public class JsonManipulationTask extends AsyncTask<String,String,Item[]>{
 
     private Context context;
     private JsonManipulationTaskInterface jsonManipulationTaskInterface;
-    private JSONObject response;
     private Item[] items,output;
-    private RequestQueue requestQueue;
+
+
+    private String tagstag;
 
     public JsonManipulationTask(Context context) {
         this.context = context;
@@ -49,6 +50,7 @@ public class JsonManipulationTask extends AsyncTask<String,String,Item[]>{
         super.onPostExecute(items);
         if(jsonManipulationTaskInterface!=null) {
             jsonManipulationTaskInterface.fetchResult(items);
+
         }
     }
 
@@ -95,6 +97,7 @@ public class JsonManipulationTask extends AsyncTask<String,String,Item[]>{
                         title = "Stackoverflow Question";
                     } else {
                         title = root.getString("title");
+
                     }
 
                     if (root.isNull("last_activity_date")) {
@@ -116,10 +119,15 @@ public class JsonManipulationTask extends AsyncTask<String,String,Item[]>{
                         name = owner.getString("display_name");
                     }
                     JSONArray tag = root.getJSONArray("tags");
+
+                    /*for(int j=0;j<tag.length();j++) {
+                        tagstag = tagstag+tag.getString(i);
+                    }*/
                     //String image, String name, int score, String link, String title, long time, String[] tags)
                     Item f = new Item(image, name, score, link, title, last_date, tag, null);
                     Log.d("f", String.valueOf(f.getDisplay_name()));
                     output[i] = f;
+
                 }
             }
             return output;

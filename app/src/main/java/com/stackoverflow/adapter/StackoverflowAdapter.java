@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.stackoverflow.CircleTransform;
 import com.stackoverflow.Item;
 import com.stackoverflow.R;
 import com.stackoverflow.db.FavoriteDbHelper;

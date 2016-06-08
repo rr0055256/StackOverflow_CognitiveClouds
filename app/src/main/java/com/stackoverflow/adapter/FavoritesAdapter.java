@@ -1,9 +1,7 @@
 package com.stackoverflow.adapter;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -16,10 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.stackoverflow.CircleTransform;
 import com.stackoverflow.Item;
 import com.stackoverflow.R;
-import com.stackoverflow.db.FavoriteDbHelper;
 
 import java.util.List;
 

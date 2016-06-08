@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+//import android.support.v4.Fragment;
+//import android.support.v4.FragmentTransaction;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.SearchView;
 import android.view.View;
@@ -30,6 +33,8 @@ public class NavigationActivity extends AppCompatActivity
 
     private ConnectivityManager cm;
     private FragmentTransaction fragmentTransaction;
+
+    private Fragment homeFragment,favoriteFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +63,18 @@ public class NavigationActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(), "Network not available. Please check your connection", Toast.LENGTH_SHORT).show ();
         }
 
-        fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.second_container,new HomeFragment());
-        fragmentTransaction.commit();
+
+        if(savedInstanceState!=null){
+            homeFragment = getSupportFragmentManager().getFragment(savedInstanceState,"Home Fragment");
+
+
+        }else {
+
+            homeFragment = new HomeFragment();
+            fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.add(R.id.second_container, homeFragment);
+            fragmentTransaction.commit();
+        }
         setActionBarTitle("Home");
     }
 
@@ -156,13 +170,16 @@ public class NavigationActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if(getSupportFragmentManager().findFragmentById(R.id.second_container).isInLayout()) {
+            getSupportFragmentManager().putFragment(outState, "Home Fragment", homeFragment);
+        }
 
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        getSupportFragmentManager().getFragment(savedInstanceState,"Home Fragment");
     }
-
 
 }
